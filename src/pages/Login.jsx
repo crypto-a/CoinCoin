@@ -11,7 +11,7 @@ export default function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault()
-        const { error, user } = await db.auth.signIn({
+        const { data, error } = await db.auth.signInWithPassword({
             email,
             password,
         })
