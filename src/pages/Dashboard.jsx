@@ -30,7 +30,7 @@ export default function Dashboard() {
     }, [user])
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+        <div className="flex flex-col items-center  min-h-screen bg-gray-100 p-4">
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
             <p className="mb-4">
                 Your coin balance: <span className="font-bold">{coinBalance}</span>
