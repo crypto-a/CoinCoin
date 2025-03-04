@@ -11,23 +11,56 @@ export default function Register() {
 
     const handleRegister = async (e) => {
         e.preventDefault()
-        const { user, error } = await db.auth.signUp({
+
+        // 1) Sign up the user via Supabase Auth
+        const { data, error: signupError } = await db.auth.signUp({
             email,
-            password,
+            password
         })
-        if (error) {
-            setError(error.message)
-        } else {
-            // After signing up, insert the new user into the custom table.
-            // You can set a default coin value (e.g. 100) and use the email as username.
-            const { error: insertError } = await db.from('user').insert([
-                { id: user.id, username: user.email, coins: 100 },
-            ])
-            if (insertError) {
-                setError(insertError.message)
+
+        if (signupError) {
+            setError(signupError.message)
+            return
+        }
+
+        // The Supabase Auth signUp response is in "data.user"
+        // If signUp succeeded:
+        const newUser = data.user
+        if (!newUser) {
+            setError('No user returned from signUp.')
+            return
+        }
+
+        try {
+            // 2) Create a new wallet row with `amount: 0`
+            const { error: walletError } = await db
+                .from('wallet')
+                .insert([{
+                    user: newUser.id,  // or store user email if you prefer
+                    amount: 0
+                }])
+            if (walletError) {
+                setError(walletError.message)
                 return
             }
+
+            // 3) (Optional) Insert into some "user" table if you want
+            //    (If you no longer need the "user" table for coins, you can skip or adapt.)
+            //    Example:
+            // const { error: userTableError } = await db.from('user').insert([
+            //   { id: newUser.id, username: newUser.email, coins: 0 }
+            // ])
+            // if (userTableError) {
+            //   setError(userTableError.message)
+            //   return
+            // }
+
+            // If everything is good, navigate to dashboard
             navigate('/dashboard')
+
+        } catch (err) {
+            console.error(err)
+            setError('Unexpected error creating wallet.')
         }
     }
 
@@ -39,6 +72,7 @@ export default function Register() {
             >
                 <h2 className="text-xl font-bold mb-4">Register</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
+
                 <input
                     type="email"
                     placeholder="Email"
@@ -55,10 +89,15 @@ export default function Register() {
                     className="border p-2 mb-4 w-full"
                     required
                 />
-                <button type="submit" className="bg-green-500 text-white w-full py-2 rounded">
+
+                <button
+                    type="submit"
+                    className="bg-green-500 text-white w-full py-2 rounded"
+                >
                     Register
                 </button>
             </form>
+
             <p className="mt-4">
                 Already have an account?{' '}
                 <Link to="/login" className="text-blue-500">

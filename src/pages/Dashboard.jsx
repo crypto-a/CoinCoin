@@ -1,40 +1,22 @@
-// src/pages/Dashboard.jsx
-import { useState, useEffect } from 'react'
-import { db } from '../db'
-import { useAuth } from '../contexts/AuthContext'
+import { useWallet } from '../contexts/WalletContext'
 import { Link } from 'react-router-dom'
 import { FiSend, FiDownload, FiList } from 'react-icons/fi'
 
 export default function Dashboard() {
-    const { user } = useAuth()
-    const [coinBalance, setCoinBalance] = useState(0)
-    const [message, setMessage] = useState('')
-
-    useEffect(() => {
-        const fetchUserCoins = async () => {
-            if (user) {
-                // Fetch the coin balance from your custom "user" table.
-                const { data, error } = await db
-                    .from('user')
-                    .select('coins')
-                    .eq('id', user.id)
-                    .single()
-                if (error) {
-                    console.error(error)
-                } else {
-                    setCoinBalance(data.coins)
-                }
-            }
-        }
-        fetchUserCoins()
-    }, [user])
+    const { wallet } = useWallet()
 
     return (
-        <div className="flex flex-col items-center  min-h-screen bg-gray-100 p-4">
+        <div className="flex flex-col items-center min-h-screen p-4">
             <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+
+            {/* If wallet is still loading or missing, show 0 or a loading state */}
             <p className="mb-4">
-                Your coin balance: <span className="font-bold">{coinBalance}</span>
+                Your coin balance:{' '}
+                <span className="font-bold">
+          {wallet ? wallet.amount : '0'}
+        </span>
             </p>
+
             <div className="flex space-x-4 mb-4">
                 <Link
                     to="/dashboard/send"
@@ -55,7 +37,6 @@ export default function Dashboard() {
                     <FiList /> Transactions
                 </Link>
             </div>
-            {message && <p>{message}</p>}
         </div>
     )
 }
