@@ -92,7 +92,7 @@ export default function Send() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50 p-4">
+        <div className="flex flex-col items-center min-h-screen bg-blue-50 p-4">
             {/* Back Button */}
             <div className="self-start mb-4">
                 <button

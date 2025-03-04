@@ -18,7 +18,7 @@ export default function Receive() {
     const qrSvg = qr.createSvgTag({ cellSize: 8, margin: 2 });
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-green-50 p-4">
+        <div className="flex flex-col items-center min-h-screen bg-green-50 p-4">
             {/* Back Button */}
             <div className="self-start mb-4">
                 <button onClick={() => navigate(-1)} className="flex items-center text-green-700">
