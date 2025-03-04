@@ -16,9 +16,12 @@ export const WalletProvider = ({ children }) => {
                 .from('wallet')
                 .select('*')
                 .eq('user', user.id)
-                .single();
+                .maybeSingle();
+
             if (error) {
                 console.error('Error fetching wallet:', error);
+            } else if (!data) {
+                console.warn('No wallet record found for this user.');
             } else {
                 setWallet(data);
             }
